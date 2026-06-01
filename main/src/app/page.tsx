@@ -44,7 +44,7 @@ export default async function HomePage() {
   const categories = await getCatalogue()
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen flex flex-col">
       <Header />
       <HeroSection />
 
@@ -52,11 +52,13 @@ export default async function HomePage() {
         <p className="text-xs uppercase tracking-widest text-gray-400 text-center">Product Catalogue</p>
       </div>
 
-      <CatalogueSection categories={categories} />
+      <div className="flex-1">
+        <CatalogueSection categories={categories} />
+      </div>
 
       <footer style={{ backgroundColor: '#dc2626' }} className="text-white mt-16 py-8">
         <div className="max-w-7xl mx-auto px-4 text-center text-sm opacity-90 space-y-1">
-          <p className="font-semibold">Garg India and Electrical Works</p>
+          <p className="font-semibold">Garg India and Engineering Works</p>
           <p>4201, Hansapuri Road, Tri-Nagar, New Delhi</p>
           <p>
             <a href="tel:+919899303030" className="hover:opacity-75 transition-opacity">

@@ -9,7 +9,7 @@ export default function HeroSection() {
             <p className="text-sm uppercase tracking-widest opacity-75 mb-2">Welcome to</p>
             <h2 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
               Garg India<br />
-              <span className="opacity-90">and Electrical Works</span>
+              <span className="opacity-90">and Engineering Works</span>
             </h2>
             <p className="text-base opacity-85 mb-6 leading-relaxed">
               Your trusted supplier for quality electrical materials, components, and equipment in Tri-Nagar, New Delhi.
@@ -31,13 +31,13 @@ export default function HeroSection() {
           </div>
           <div className="rounded-xl overflow-hidden shadow-2xl h-64 md:h-80">
             <iframe
-              src="https://maps.google.com/maps?q=Tri+Nagar+Delhi&output=embed&z=15"
+              src="https://maps.google.com/maps?q=28.67749407377176,77.15622196536829&output=embed&z=17"
               width="100%"
               height="100%"
               style={{ border: 0 }}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="Garg India and Electrical Works location"
+              title="Garg India and Engineering Works location"
             />
           </div>
         </div>
