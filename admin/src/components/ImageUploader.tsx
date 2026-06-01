@@ -170,11 +170,15 @@ export default function ImageUploader({ categories }: { categories: CategoryWith
         fd.append('widths', String(p.width))
         fd.append('heights', String(p.height))
       }
-      await uploadImages(fd)
+      const result = await uploadImages(fd)
+      if (result?.error) {
+        setUploadError(result.error)
+        return
+      }
       setPreviews([])
       router.refresh()
     } catch (e: unknown) {
-      setUploadError(e instanceof Error ? e.message : 'Upload failed')
+      setUploadError(e instanceof Error ? e.message : 'Unexpected error — check Vercel env vars and Supabase bucket')
     } finally {
       setUploading(false)
     }

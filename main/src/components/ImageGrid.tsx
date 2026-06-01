@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import NextImage from 'next/image'
 import type { Image } from '@/lib/types'
 
 function ImageModal({ image, onClose }: { image: Image; onClose: () => void }) {
@@ -34,11 +35,14 @@ export default function ImageGrid({ images }: { images: Image[] }) {
             className="masonry-item cursor-pointer rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
             onClick={() => setSelected(img)}
           >
-            <img
+            <NextImage
               src={img.url}
               alt={img.filename}
+              width={img.width ?? 800}
+              height={img.height ?? 600}
               className="w-full h-auto block"
               loading="lazy"
+              sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 33vw"
             />
           </div>
         ))}

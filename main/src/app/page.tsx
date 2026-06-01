@@ -4,13 +4,12 @@ import Header from '@/components/Header'
 import HeroSection from '@/components/HeroSection'
 import CatalogueSection from '@/components/CatalogueSection'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 120 // 2-min fallback; on-demand revalidation triggered by admin
 
 async function getCatalogue(): Promise<CategoryWithImages[]> {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { global: { fetch: (url, init) => fetch(url, { ...init, cache: 'no-store' }) } }
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
   const { data: categoriesData } = await supabase

@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { createSupabaseAdmin } from '@/lib/supabase'
 import { signSession, isAuthenticated } from '@/lib/session'
 import type { Category, Image } from '@/lib/types'
+import { revalidateMainSite } from '@/lib/revalidate'
 
 async function requireAuth() {
   const authed = await isAuthenticated()
@@ -93,11 +94,12 @@ export async function deleteCategory(id: string) {
   }
 
   await admin.from('categories').delete().eq('id', id)
+  await revalidateMainSite()
 }
 
 // ── Images ────────────────────────────────────────────────────────────────────
 
-export async function uploadImages(formData: FormData) {
+export async function uploadImages(formData: FormData): Promise<{ error?: string }> {
   await requireAuth()
   const admin = createSupabaseAdmin()
 
@@ -110,7 +112,8 @@ export async function uploadImages(formData: FormData) {
     const { data: maxData } = await admin.from('categories').select('display_order').order('display_order', { ascending: false }).limit(1).single()
     const max = maxData as { display_order: number } | null
     const nextOrder = (max?.display_order ?? -1) + 1
-    const { data: newCat } = await admin.from('categories').insert({ name: newCategoryName, display_order: nextOrder }).select('id').single()
+    const { data: newCat, error: catErr } = await admin.from('categories').insert({ name: newCategoryName, display_order: nextOrder }).select('id').single()
+    if (catErr) return { error: `Failed to create category: ${catErr.message}` }
     finalCategoryId = (newCat as { id: string } | null)?.id ?? null
   }
 
@@ -125,15 +128,15 @@ export async function uploadImages(formData: FormData) {
     const id = crypto.randomUUID()
     const path = `${folder}/${id}.${ext}`
 
-    const { error: uploadError } = await admin.storage.from('catalogue').upload(path, file, {
+    const { error: storageErr } = await admin.storage.from('catalogue').upload(path, file, {
       contentType: file.type,
       upsert: false,
     })
-    if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`)
+    if (storageErr) return { error: `Storage error: ${storageErr.message}` }
 
     const { data: urlData } = admin.storage.from('catalogue').getPublicUrl(path)
 
-    await admin.from('images').insert({
+    const { error: dbErr } = await admin.from('images').insert({
       category_id: finalCategoryId,
       filename: file.name,
       storage_path: path,
@@ -141,7 +144,11 @@ export async function uploadImages(formData: FormData) {
       width: widths[i] ? parseInt(widths[i]) : null,
       height: heights[i] ? parseInt(heights[i]) : null,
     })
+    if (dbErr) return { error: `Database error: ${dbErr.message}` }
   }
+
+  await revalidateMainSite()
+  return {}
 }
 
 export async function deleteImage(id: string, storagePath: string) {
@@ -149,12 +156,14 @@ export async function deleteImage(id: string, storagePath: string) {
   const admin = createSupabaseAdmin()
   await admin.storage.from('catalogue').remove([storagePath])
   await admin.from('images').delete().eq('id', id)
+  await revalidateMainSite()
 }
 
 export async function moveImage(imageId: string, newCategoryId: string | null) {
   await requireAuth()
   const admin = createSupabaseAdmin()
   await admin.from('images').update({ category_id: newCategoryId }).eq('id', imageId)
+  await revalidateMainSite()
 }
 
 // ── Settings ──────────────────────────────────────────────────────────────────
