@@ -4,8 +4,7 @@ import { createSupabaseAdmin } from '@/lib/supabase'
 import type { CategoryWithImages, Category, Image } from '@/lib/types'
 import AdminNav from '@/components/AdminNav'
 import ImageUploader from '@/components/ImageUploader'
-import CategorySection from '@/components/CategorySection'
-import UncategorizedSection from '@/components/UncategorizedSection'
+import DashboardClient from '@/components/DashboardClient'
 
 async function getData() {
   const admin = createSupabaseAdmin()
@@ -53,18 +52,11 @@ export default async function DashboardPage() {
       <AdminNav />
       <main className="max-w-5xl mx-auto px-3 sm:px-4 py-6 sm:py-8 space-y-6">
         <ImageUploader categories={categories} />
-        <div className="space-y-6">
-          {categories.length === 0 && uncategorized.length === 0 ? (
-            <p className="text-center text-gray-400 py-12 text-sm">No images yet. Upload some above.</p>
-          ) : (
-            <>
-              {categories.map(cat => (
-                <CategorySection key={cat.id} category={cat} allCategories={categories} />
-              ))}
-              <UncategorizedSection images={uncategorized} categories={categories} />
-            </>
-          )}
-        </div>
+        {categories.length === 0 && uncategorized.length === 0 ? (
+          <p className="text-center text-gray-400 py-12 text-sm">No images yet. Upload some above.</p>
+        ) : (
+          <DashboardClient categories={categories} uncategorized={uncategorized} />
+        )}
       </main>
     </div>
   )

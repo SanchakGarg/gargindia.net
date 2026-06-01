@@ -8,7 +8,7 @@ export default function HeroSection() {
           <div>
             <p className="text-sm uppercase tracking-widest opacity-75 mb-2">Welcome to</p>
             <h2 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
-              Garg India<br />
+              Garg Electrical<br />
               <span className="opacity-90">and Engineering Works</span>
             </h2>
             <p className="text-base opacity-85 mb-6 leading-relaxed">
@@ -37,7 +37,7 @@ export default function HeroSection() {
               style={{ border: 0 }}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="Garg India and Engineering Works location"
+              title="Garg Electrical and Engineering Works location"
             />
           </div>
         </div>

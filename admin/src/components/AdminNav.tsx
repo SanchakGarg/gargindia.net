@@ -18,7 +18,7 @@ export default function AdminNav() {
           >
             G
           </span>
-          <span className="font-semibold text-gray-900 text-sm hidden sm:block">Garg India Admin</span>
+          <span className="font-semibold text-gray-900 text-sm hidden sm:block">Garg Electrical Admin</span>
         </div>
         <div className="flex items-center gap-1">
           <Link

@@ -5,7 +5,7 @@ export default function Header() {
     <header style={{ backgroundColor: '#dc2626' }} className="text-white sticky top-0 z-50 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between flex-wrap gap-2">
         <div>
-          <h1 className="text-xl font-bold tracking-tight leading-tight">Garg India</h1>
+          <h1 className="text-xl font-bold tracking-tight leading-tight">Garg Electrical</h1>
           <p className="text-xs opacity-90 tracking-wide">and Engineering Works</p>
         </div>
         <div className="flex items-center gap-4 text-sm">
