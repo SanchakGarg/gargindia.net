@@ -1,0 +1,15 @@
+# env files (contain Supabase keys — never commit)
+.env.local
+.env*.local
+
+# Next.js build output
+main/.next/
+admin/.next/
+
+# node_modules
+main/node_modules/
+admin/node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
