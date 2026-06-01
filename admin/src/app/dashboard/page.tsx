@@ -3,8 +3,9 @@ import type { CategoryWithImages, Category, Image } from '@/lib/types'
 import AdminNav from '@/components/AdminNav'
 import ImageUploader from '@/components/ImageUploader'
 import CategorySection from '@/components/CategorySection'
+import UncategorizedSection from '@/components/UncategorizedSection'
 
-async function getData(): Promise<CategoryWithImages[]> {
+async function getData() {
   const admin = createSupabaseAdmin()
 
   const { data: catRaw } = await admin
@@ -12,44 +13,54 @@ async function getData(): Promise<CategoryWithImages[]> {
     .select('*')
     .order('display_order', { ascending: true })
 
-  const categories = catRaw as Category[] | null
-  if (!categories || categories.length === 0) return []
+  const categories = (catRaw as Category[] | null) ?? []
 
   const { data: imgRaw } = await admin
     .from('images')
     .select('*')
     .order('created_at', { ascending: false })
 
-  const images = (imgRaw as Image[] | null) ?? []
+  const allImages = (imgRaw as Image[] | null) ?? []
+
   const imageMap = new Map<string, Image[]>()
-  for (const img of images) {
-    if (!img.category_id) continue
-    const arr = imageMap.get(img.category_id) ?? []
-    arr.push(img)
-    imageMap.set(img.category_id, arr)
+  const uncategorized: Image[] = []
+
+  for (const img of allImages) {
+    if (!img.category_id) {
+      uncategorized.push(img)
+    } else {
+      const arr = imageMap.get(img.category_id) ?? []
+      arr.push(img)
+      imageMap.set(img.category_id, arr)
+    }
   }
 
-  return categories.map((cat) => ({
+  const categoriesWithImages: CategoryWithImages[] = categories.map(cat => ({
     ...cat,
     images: imageMap.get(cat.id) ?? [] as Image[],
   }))
+
+  return { categories: categoriesWithImages, uncategorized }
 }
 
 export default async function DashboardPage() {
-  const categories = await getData()
+  const { categories, uncategorized } = await getData()
 
   return (
     <div className="min-h-screen">
       <AdminNav />
-      <main className="max-w-5xl mx-auto px-4 py-8 space-y-10">
+      <main className="max-w-5xl mx-auto px-3 sm:px-4 py-6 sm:py-8 space-y-6">
         <ImageUploader categories={categories} />
-        <div className="space-y-8">
-          {categories.length === 0 ? (
-            <p className="text-center text-gray-400 py-12">No categories yet. Add one above.</p>
+        <div className="space-y-6">
+          {categories.length === 0 && uncategorized.length === 0 ? (
+            <p className="text-center text-gray-400 py-12 text-sm">No images yet. Upload some above.</p>
           ) : (
-            categories.map((cat) => (
-              <CategorySection key={cat.id} category={cat} allCategories={categories} />
-            ))
+            <>
+              {categories.map(cat => (
+                <CategorySection key={cat.id} category={cat} allCategories={categories} />
+              ))}
+              <UncategorizedSection images={uncategorized} categories={categories} />
+            </>
           )}
         </div>
       </main>

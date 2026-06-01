@@ -100,19 +100,30 @@ export async function deleteCategory(id: string) {
 export async function uploadImages(formData: FormData) {
   await requireAuth()
   const admin = createSupabaseAdmin()
-  const categoryId = formData.get('categoryId') as string
 
-  if (!categoryId) throw new Error('No category selected')
+  const categoryId = (formData.get('categoryId') as string) || null
+  const newCategoryName = (formData.get('newCategoryName') as string)?.trim() || null
+
+  let finalCategoryId: string | null = categoryId
+
+  if (newCategoryName) {
+    const { data: maxData } = await admin.from('categories').select('display_order').order('display_order', { ascending: false }).limit(1).single()
+    const max = maxData as { display_order: number } | null
+    const nextOrder = (max?.display_order ?? -1) + 1
+    const { data: newCat } = await admin.from('categories').insert({ name: newCategoryName, display_order: nextOrder }).select('id').single()
+    finalCategoryId = (newCat as { id: string } | null)?.id ?? null
+  }
 
   const files = formData.getAll('files') as File[]
   const widths = formData.getAll('widths') as string[]
   const heights = formData.getAll('heights') as string[]
+  const folder = finalCategoryId ?? 'uncategorized'
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i]
     const ext = file.name.split('.').pop() ?? 'jpg'
     const id = crypto.randomUUID()
-    const path = `${categoryId}/${id}.${ext}`
+    const path = `${folder}/${id}.${ext}`
 
     const { error: uploadError } = await admin.storage.from('catalogue').upload(path, file, {
       contentType: file.type,
@@ -123,7 +134,7 @@ export async function uploadImages(formData: FormData) {
     const { data: urlData } = admin.storage.from('catalogue').getPublicUrl(path)
 
     await admin.from('images').insert({
-      category_id: categoryId,
+      category_id: finalCategoryId,
       filename: file.name,
       storage_path: path,
       url: urlData.publicUrl,
@@ -140,7 +151,7 @@ export async function deleteImage(id: string, storagePath: string) {
   await admin.from('images').delete().eq('id', id)
 }
 
-export async function moveImage(imageId: string, newCategoryId: string) {
+export async function moveImage(imageId: string, newCategoryId: string | null) {
   await requireAuth()
   const admin = createSupabaseAdmin()
   await admin.from('images').update({ category_id: newCategoryId }).eq('id', imageId)
