@@ -4,12 +4,13 @@ import Header from '@/components/Header'
 import HeroSection from '@/components/HeroSection'
 import CatalogueSection from '@/components/CatalogueSection'
 
-export const revalidate = 300
+export const dynamic = 'force-dynamic'
 
 async function getCatalogue(): Promise<CategoryWithImages[]> {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { global: { fetch: (url, init) => fetch(url, { ...init, cache: 'no-store' }) } }
   )
 
   const { data: categoriesData } = await supabase

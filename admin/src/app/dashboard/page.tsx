@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { createSupabaseAdmin } from '@/lib/supabase'
 import type { CategoryWithImages, Category, Image } from '@/lib/types'
 import AdminNav from '@/components/AdminNav'
