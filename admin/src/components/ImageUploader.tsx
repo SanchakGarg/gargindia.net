@@ -137,6 +137,7 @@ export default function ImageUploader({ categories }: { categories: CategoryWith
   const [previews, setPreviews] = useState<FilePreview[]>([])
   const [uploading, setUploading] = useState(false)
   const [dragOver, setDragOver] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
 
   async function handleFiles(files: FileList | File[]) {
     const arr = Array.from(files)
@@ -159,6 +160,7 @@ export default function ImageUploader({ categories }: { categories: CategoryWith
   async function handleUpload() {
     if (previews.length === 0) return
     setUploading(true)
+    setUploadError(null)
     try {
       const fd = new FormData()
       if (selection.type === 'existing') fd.append('categoryId', selection.id)
@@ -171,6 +173,8 @@ export default function ImageUploader({ categories }: { categories: CategoryWith
       await uploadImages(fd)
       setPreviews([])
       router.refresh()
+    } catch (e: unknown) {
+      setUploadError(e instanceof Error ? e.message : 'Upload failed')
     } finally {
       setUploading(false)
     }
@@ -206,6 +210,13 @@ export default function ImageUploader({ categories }: { categories: CategoryWith
         <input ref={inputRef} type="file" accept="image/*" multiple className="hidden"
           onChange={e => e.target.files && handleFiles(e.target.files)} />
       </div>
+
+      {uploadError && (
+        <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">
+          <strong>Upload failed:</strong> {uploadError}
+          <p className="text-xs mt-1 text-red-500">Make sure the Supabase schema SQL has been run and the &quot;catalogue&quot; storage bucket exists.</p>
+        </div>
+      )}
 
       {previews.length > 0 && (
         <div className="space-y-3">

@@ -129,7 +129,7 @@ export async function uploadImages(formData: FormData) {
       contentType: file.type,
       upsert: false,
     })
-    if (uploadError) continue
+    if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`)
 
     const { data: urlData } = admin.storage.from('catalogue').getPublicUrl(path)
 
