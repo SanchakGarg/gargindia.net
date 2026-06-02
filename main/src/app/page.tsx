@@ -12,32 +12,43 @@ async function getCatalogue(): Promise<CategoryWithImages[]> {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
-  const { data: categoriesData } = await supabase
-    .from('categories')
-    .select('*')
-    .order('display_order', { ascending: true })
+  const [{ data: categoriesData }, { data: imagesData }] = await Promise.all([
+    supabase.from('categories').select('*').order('display_order', { ascending: true }),
+    supabase.from('images').select('*').order('created_at', { ascending: true }),
+  ])
 
-  const categories = (categoriesData as CategoryWithImages[] | null)
-  if (!categories || categories.length === 0) return []
-
-  const { data: imagesData } = await supabase
-    .from('images')
-    .select('*')
-    .order('created_at', { ascending: true })
-
+  const categories = (categoriesData as CategoryWithImages[] | null) ?? []
   const images = (imagesData as Image[] | null) ?? []
+
   const imageMap = new Map<string, Image[]>()
+  const uncategorized: Image[] = []
+
   for (const img of images) {
-    if (!img.category_id) continue
+    if (!img.category_id) {
+      uncategorized.push(img)
+      continue
+    }
     const arr = imageMap.get(img.category_id) ?? []
     arr.push(img)
     imageMap.set(img.category_id, arr)
   }
 
-  return categories.map((cat) => ({
+  const result: CategoryWithImages[] = categories.map((cat) => ({
     ...cat,
-    images: imageMap.get(cat.id) ?? [] as Image[],
+    images: imageMap.get(cat.id) ?? [],
   }))
+
+  if (uncategorized.length > 0) {
+    result.push({
+      id: '__uncategorized__',
+      name: 'Uncategorized',
+      display_order: 9999,
+      created_at: '',
+      images: uncategorized,
+    })
+  }
+
+  return result
 }
 
 export default async function HomePage() {

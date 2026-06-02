@@ -2,101 +2,11 @@
 
 import { useState, useActionState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useDraggable, useDroppable } from '@dnd-kit/core'
-import { Pencil, Trash2, Check, X, GripVertical, Move } from 'lucide-react'
-import { renameCategory, deleteCategory, deleteImage, moveImage } from '@/app/actions'
-import type { CategoryWithImages, Image } from '@/lib/types'
-
-function DraggableImage({
-  image,
-  categoryId,
-  allCategories,
-}: {
-  image: Image
-  categoryId: string
-  allCategories: CategoryWithImages[]
-}) {
-  const router = useRouter()
-  const [showActions, setShowActions] = useState(false)
-  const [deleting, setDeleting] = useState(false)
-  const [moving, setMoving] = useState(false)
-
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: image.id,
-    data: { image, categoryId },
-  })
-
-  const style = transform
-    ? { transform: `translate(${transform.x}px, ${transform.y}px)`, zIndex: 50 }
-    : undefined
-
-  async function handleDelete() {
-    if (!confirm('Delete this image?')) return
-    setDeleting(true)
-    await deleteImage(image.id, image.storage_path)
-    router.refresh()
-  }
-
-  async function handleMove(val: string) {
-    setMoving(true)
-    setShowActions(false)
-    await moveImage(image.id, val === '__none__' ? null : val)
-    router.refresh()
-  }
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={`relative rounded-xl overflow-hidden border border-gray-200 bg-gray-50 ${isDragging ? 'opacity-30' : ''}`}
-    >
-      {/* Drag handle */}
-      <div
-        {...listeners}
-        {...attributes}
-        className="absolute top-1.5 left-1.5 z-10 w-6 h-6 bg-black/50 rounded-md flex items-center justify-center cursor-grab active:cursor-grabbing touch-none"
-      >
-        <GripVertical size={12} className="text-white" />
-      </div>
-
-      <img src={image.url} alt={image.filename} className="w-full h-auto block" loading="lazy" />
-
-      {/* Action button — always visible */}
-      <button
-        onClick={() => setShowActions(v => !v)}
-        className="absolute top-1.5 right-1.5 z-10 w-6 h-6 bg-black/50 rounded-md flex items-center justify-center"
-      >
-        <Move size={11} className="text-white" />
-      </button>
-
-      {/* Action panel */}
-      {showActions && (
-        <div className="absolute inset-x-0 bottom-0 bg-white border-t border-gray-200 p-2 space-y-1.5 z-20">
-          <select
-            disabled={moving}
-            defaultValue=""
-            onChange={e => handleMove(e.target.value)}
-            className="w-full text-xs bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none"
-          >
-            <option value="" disabled>Move to…</option>
-            {allCategories
-              .filter(c => c.id !== categoryId)
-              .map(c => <option key={c.id} value={c.id}>{c.name}</option>)
-            }
-            <option value="__none__">Uncategorized</option>
-          </select>
-          <button
-            onClick={handleDelete}
-            disabled={deleting}
-            className="w-full py-1.5 text-xs font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
-          >
-            {deleting ? 'Deleting…' : 'Delete'}
-          </button>
-        </div>
-      )}
-    </div>
-  )
-}
+import { useDroppable } from '@dnd-kit/core'
+import { Pencil, Trash2, Check, X } from 'lucide-react'
+import { renameCategory, deleteCategory } from '@/app/actions'
+import ImageCard from './ImageCard'
+import type { CategoryWithImages } from '@/lib/types'
 
 function DroppableGrid({
   id,
@@ -197,10 +107,10 @@ export default function CategorySection({
 
       <DroppableGrid id={category.id} isEmpty={category.images.length === 0}>
         {category.images.map(img => (
-          <DraggableImage
+          <ImageCard
             key={img.id}
             image={img}
-            categoryId={category.id}
+            currentCategoryId={category.id}
             allCategories={allCategories}
           />
         ))}
