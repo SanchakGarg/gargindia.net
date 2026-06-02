@@ -3,8 +3,8 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: 'Garg Electrical and Engineering Works',
-  description: 'Product catalogue for Garg Electrical and Engineering Works — engineering supplies and equipment in Tri-Nagar, New Delhi.',
-  keywords: ['electrical', 'garg india', 'tri-nagar', 'delhi', 'electrical works'],
+  description: 'Product catalogue for Garg Electrical and Engineering Works — electrical, engineering, and hydraulics supplies in Tri-Nagar, North Delhi.',
+  keywords: ['electrical', 'engineering', 'hydraulics', 'garg india', 'tri-nagar', 'delhi'],
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
