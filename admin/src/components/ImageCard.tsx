@@ -55,10 +55,11 @@ export default function ImageCard({
   }
 
   return (
+    // overflow-visible so the dropdown floats outside the card
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative rounded-xl overflow-hidden border border-gray-200 bg-gray-50 ${isDragging ? 'opacity-30' : ''}`}
+      className={`relative rounded-xl border border-gray-200 bg-gray-50 ${isDragging ? 'opacity-30' : ''}`}
     >
       {/* Drag handle */}
       <div
@@ -69,7 +70,10 @@ export default function ImageCard({
         <GripVertical size={12} className="text-white" />
       </div>
 
-      <img src={image.url} alt={image.filename} className="w-full h-auto block" loading="lazy" />
+      {/* Image gets its own overflow-hidden for rounded corners */}
+      <div className="rounded-xl overflow-hidden">
+        <img src={image.url} alt={image.filename} className="w-full h-auto block" loading="lazy" />
+      </div>
 
       {/* Action toggle */}
       <button
@@ -79,31 +83,34 @@ export default function ImageCard({
         <Move size={11} className="text-white" />
       </button>
 
+      {/* Dropdown — floats below the move button, right-aligned */}
       {showActions && (
-        <div className="absolute inset-x-0 bottom-0 bg-white border-t border-gray-200 z-20 rounded-b-xl shadow-lg overflow-hidden">
+        <div className="absolute top-8 right-1 w-40 bg-white border border-gray-200 rounded-xl shadow-xl z-30">
           {/* Delete */}
-          <button
-            onClick={handleDelete}
-            disabled={deleting}
-            className="w-full py-2 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 active:bg-red-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
-          >
-            <Trash2 size={11} />
-            {deleting ? 'Deleting…' : 'Delete Image'}
-          </button>
+          <div className="p-2 pb-1">
+            <button
+              onClick={handleDelete}
+              disabled={deleting}
+              className="w-full py-1.5 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 active:bg-red-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5 rounded-lg"
+            >
+              <Trash2 size={11} />
+              {deleting ? 'Deleting…' : 'Delete'}
+            </button>
+          </div>
 
           {/* Search */}
-          <div className="px-2 py-1.5 border-b border-gray-100">
+          <div className="px-2 pb-1.5">
             <input
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search category…"
-              className="w-full text-xs bg-gray-50 border border-gray-200 rounded px-2 py-1.5 focus:outline-none focus:border-gray-400"
+              className="w-full text-xs bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:border-gray-400"
             />
           </div>
 
           {/* Category list */}
-          <div className="max-h-24 overflow-y-auto">
+          <div className="max-h-28 overflow-y-auto border-t border-gray-100 pb-1">
             {filtered.map(c => (
               <button
                 key={c.id}
