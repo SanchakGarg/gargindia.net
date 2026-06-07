@@ -17,7 +17,7 @@ export default async function LoginPage() {
             <span className="text-white text-2xl font-bold">G</span>
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Admin Access</h1>
-          <p className="text-sm text-gray-500 mt-1">Garg Electrical and Engineering Works</p>
+          <p className="text-sm text-gray-500 mt-1">GARG ELECTRICAL AND ENGINEERING WORKS</p>
         </div>
         <LoginForm />
       </div>

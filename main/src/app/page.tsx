@@ -69,7 +69,7 @@ export default async function HomePage() {
 
       <footer style={{ backgroundColor: '#dc2626' }} className="text-white mt-16 py-8">
         <div className="max-w-7xl mx-auto px-4 text-center text-sm opacity-90 space-y-1">
-          <p className="font-semibold">Garg Electrical and Engineering Works</p>
+          <p className="font-semibold">GARG ELECTRICAL AND ENGINEERING WORKS</p>
           <p>4201 (old-3453), Hansapuri Road, Tri-Nagar, North Delhi-110035</p>
           <p>
             <a href="tel:+919899303030" className="hover:opacity-75 transition-opacity">

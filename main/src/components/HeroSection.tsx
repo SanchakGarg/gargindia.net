@@ -37,7 +37,7 @@ export default function HeroSection() {
               style={{ border: 0 }}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="Garg Electrical and Engineering Works location"
+              title="GARG ELECTRICAL AND ENGINEERING WORKS location"
             />
           </div>
         </div>
