@@ -12,13 +12,13 @@ export default function HeroSection() {
               <span className="opacity-90">and Engineering Works</span>
             </h2>
             <p className="text-base opacity-85 mb-6 leading-relaxed">
-              Your trusted supplier for quality electrical, engineering, and hydraulics materials, components, and equipment in Tri-Nagar, North Delhi.
+              Machinery Parts
             </p>
             <div className="space-y-3">
               <div className="flex items-start gap-3">
                 <MapPin size={18} className="mt-0.5 shrink-0 opacity-80" />
                 <p className="text-sm opacity-90">
-                  4201 (old-3453), Hansapuri Road,<br />Tri-Nagar, North Delhi-110035
+                  4201 (old-3453), Hansapuri main Road,<br />Tri-Nagar, Delhi-110035
                 </p>
               </div>
               <div className="flex items-center gap-3">
